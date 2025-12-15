@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Prédiction de Réponse au Traitement Néoadjuvant</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fff0f5; /* Rose très doux */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d1477c; /* Rose profond October Rose */
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 8px 12px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            margin-top: 25px;
+            background-color: #d1477c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #b23c6d;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #d1477c;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.3);
+        }
+
+        .modal-content {
+            background-color: #ffe6f0; /* Rose très clair */
+            margin: 10% auto;
+            padding: 35px 25px;
+            border: 2px solid #d1477c;
+            border-radius: 15px;
+            max-width: 600px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            position: relative;
+        }
+
+        .close-btn {
+            background-color: #d1477c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .close-btn:hover {
+            background-color: #b23c6d;
+        }
+    </style>
+</head>
+<body>
+    <form id="predictForm" enctype="multipart/form-data">
+        <h1>Prédiction de Réponse au Traitement Néoadjuvant</h1>
+
+        <!-- Upload dossier d'images -->
+        <label for="images">Dossier des images :</label>
+        <input type="file" id="images" name="images" multiple webkitdirectory directory>
+
+        <!-- Upload dossier des segmentations -->
+        <label for="segmentations">Dossier des segmentations :</label>
+        <input type="file" id="segmentations" name="segmentations" multiple webkitdirectory directory>
+
+        <h2>Informations cliniques</h2>
+        {% for feature in clin_features  %}
+            <label for="{{ feature }}">{{ feature.replace('_',' ').capitalize() }}:</label>
+            <input type="text" id="{{ feature }}" name="{{ feature }}" required>
+        {% endfor %}
+
+        <input type="submit" value="Prédire">
+    </form>
+
+    <!-- Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content" id="modalText">
+            <p></p>
+            <button class="close-btn" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        const modal = document.getElementById('resultModal');
+        const modalText = document.getElementById('modalText').querySelector('p');
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                modalText.textContent = data;
+                modal.style.display = 'block';
+            })
+            .catch(err => alert("Erreur : " + err));
+        });
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

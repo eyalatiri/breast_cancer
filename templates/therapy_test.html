@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aide à la décision clinique</title>
+  <style>
+    :root{
+      --bg:#fff7fb;
+      --card:#ffffff;
+      --line:#f1d7e6;
+      --muted:#6b5770;
+
+      --brand:#c2185b;
+      --brand2:#ad1457;
+      --brandSoft:#ffe3ef;
+      --ink:#1b1020;
+
+      --good:#1b8f5a;
+      --bad:#c62828;
+      --warn:#b26a00;
+
+      --shadow:0 14px 38px rgba(194,24,91,.10);
+      --shadow2:0 10px 20px rgba(0,0,0,.06);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      margin:0; background:var(--bg); color:var(--ink);
+    }
+
+    header{
+      position:sticky; top:0; z-index:5;
+      background:linear-gradient(90deg, var(--brand2), #e91e63);
+      color:#fff;
+      border-bottom:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 22px rgba(173,20,87,.18);
+    }
+    .topbar{
+      max-width:1200px; margin:0 auto;
+      padding:14px 18px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .titleWrap{display:flex; flex-direction:column; gap:2px}
+    .titleWrap .t{font-weight:900; letter-spacing:.2px; font-size:1.05rem}
+    .titleWrap .s{opacity:.92; font-size:.90rem}
+
+    main{max-width:1200px;margin:0 auto;padding:16px}
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .h{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(194,24,91,.12);
+      background:linear-gradient(180deg, #fff, var(--brandSoft));
+      color:var(--brand2);
+      font-weight:900;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+    }
+    .b{padding:16px}
+
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      font-weight:900;font-size:.86rem;border:1px solid transparent;
+      white-space:nowrap;
+      background:#fff;
+    }
+    .pill.good{background:#e9fbf1;color:#0f6b43;border-color:#bdebd3}
+    .pill.bad{background:#fff0f1;color:#8a1f1f;border-color:#ffd0d5}
+    .pill.warn{background:#fff6e8;color:#7b4a00;border-color:#ffe0ad}
+    .pill.neutral{background:#fff;color:#3b2b43;border-color:rgba(194,24,91,.22)}
+
+    .sectionTitle{
+      font-weight:900;
+      margin:10px 0 8px;
+      color:var(--ink);
+      display:flex;align-items:center;gap:8px;
+    }
+
+    .formGrid{
+      display:grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap:10px;
+      align-items:end;
+    }
+    @media(max-width:1100px){ .formGrid{grid-template-columns: repeat(3, 1fr);} }
+    @media(max-width:680px){ .formGrid{grid-template-columns: 1fr;} }
+
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-size:.86rem;color:#3b2b43;font-weight:800}
+    input,select{
+      padding:11px 12px;
+      border:1px solid rgba(194,24,91,.22);
+      border-radius:12px;
+      font-size:.95rem;
+      background:#fff;
+      transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+    }
+    input:focus,select:focus{
+      outline:none;border-color:rgba(194,24,91,.75);
+      box-shadow:0 0 0 4px rgba(194,24,91,.12);
+    }
+    .hint{font-size:.76rem;color:var(--muted);line-height:1.2}
+    .err{display:none;color:#b00020;font-size:.78rem;font-weight:800}
+    .invalid input,.invalid select{
+      border-color:#ef4444;
+      box-shadow:0 0 0 4px rgba(239,68,68,.10)
+    }
+    .invalid .err{display:block}
+
+    .btnRow{
+      display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:wrap;
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid rgba(194,24,91,.14);
+    }
+    .btnGroup{display:flex; gap:10px; flex-wrap:wrap}
+
+    .btn{
+      appearance:none;
+      border:1px solid transparent;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      user-select:none;
+      box-shadow:var(--shadow2);
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    .btn:active{transform:scale(.98)}
+    .btn.primary{
+      background:linear-gradient(90deg, var(--brand2), #e91e63);
+      color:#fff;
+      border-color:rgba(255,255,255,.16);
+    }
+    .btn.primary:hover{box-shadow:0 16px 30px rgba(194,24,91,.18)}
+    .btn.ghost{
+      background:rgba(255,255,255,.20);
+      color:#fff;
+      border-color:rgba(255,255,255,.35);
+      box-shadow:none;
+    }
+    .btn.light{
+      background:#fff;
+      color:var(--ink);
+      border-color:rgba(194,24,91,.22);
+    }
+    .btn.light:hover{
+      border-color:rgba(194,24,91,.42);
+      box-shadow:0 16px 26px rgba(194,24,91,.10);
+    }
+    .btn.danger{
+      background:#fff0f1;
+      color:#8a1f1f;
+      border-color:#ffd0d5;
+    }
+
+    .loader{
+      display:none;
+      margin-top:10px;
+      padding:12px;
+      border:1px dashed rgba(194,24,91,.30);
+      border-radius:14px;
+      background:linear-gradient(180deg,#fff,#fff5fb);
+      color:#3b2b43;
+      text-align:center;
+    }
+
+    .stack{display:grid; grid-template-columns:1fr; gap:12px}
+
+    .banner{
+      border:1px solid rgba(194,24,91,.16);
+      background:linear-gradient(180deg,#ffffff,#fff1f7);
+      border-radius:14px;
+      padding:14px;
+    }
+    .banner h3{margin:0 0 6px;font-size:1rem}
+    .banner p{margin:0;color:#3b2b43;line-height:1.35}
+    .mini{font-size:.86rem;color:var(--muted)}
+
+    .panel{
+      border:1px solid rgba(194,24,91,.14);
+      border-radius:14px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow:0 10px 20px rgba(0,0,0,.05);
+    }
+    .panelTop{
+      padding:12px 14px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background:linear-gradient(180deg,#fff, var(--brandSoft));
+      border-bottom:1px solid rgba(194,24,91,.10);
+      font-weight:900;
+      color:var(--brand2);
+      flex-wrap:wrap;
+    }
+    .panelBody{padding:12px 14px}
+
+    .bar{
+      height:10px;background:#f3e6ee;border-radius:999px;overflow:hidden;
+      border:1px solid rgba(194,24,91,.14); margin-top:10px;
+    }
+    .fill{height:100%}
+
+    .metaLine{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:8px}
+    .metaLine .k{font-weight:900;color:#3b2b43}
+    .metaLine .v{color:#3b2b43;font-weight:800}
+
+    .note{
+      margin-top:10px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(194,24,91,.12);
+      background:#fff7fb;
+      color:#1b1020;
+      line-height:1.35;
+      white-space:pre-wrap;
+    }
+
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tabBtn{
+      appearance:none;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:900;
+      border:1px solid rgba(194,24,91,.18);
+      background:#fff;
+      color:var(--brand2);
+      cursor:pointer;
+      box-shadow:0 10px 18px rgba(0,0,0,.05);
+      transition: transform .08s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+    }
+    .tabBtn:active{transform:scale(.98)}
+    .tabBtn.active{
+      background:linear-gradient(90deg, var(--brandSoft), #fff);
+      border-color:rgba(194,24,91,.35);
+      box-shadow:0 16px 24px rgba(194,24,91,.12);
+    }
+
+    .xaiGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px; margin-top:10px}
+    @media(max-width:980px){.xaiGrid{grid-template-columns:1fr}}
+    .xaiCol{
+      border:1px solid rgba(194,24,91,.12);
+      background:#fff;
+      border-radius:14px;
+      padding:10px;
+    }
+    .xaiCol h4{margin:0 0 8px;font-size:.92rem;color:#3b2b43}
+    .li{
+      display:flex;justify-content:space-between;gap:10px;
+      padding:8px 10px;border-radius:12px;background:#fff;border:1px solid rgba(194,24,91,.10);
+      margin-bottom:8px;
+    }
+    .li .left{display:flex;flex-direction:column;gap:2px}
+    .li .var{font-weight:900;font-size:.9rem}
+    .li .val{font-size:.82rem;color:#5b4a63}
+    .li .tag{
+      font-weight:900;font-size:.76rem;
+      padding:4px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap;
+      align-self:center;
+    }
+    .tag.up{background:#e9fbf1;color:#0f6b43;border-color:#bdebd3}
+    .tag.down{background:#fff0f1;color:#8a1f1f;border-color:#ffd0d5}
+
+    /* ✅ Multisélection traitement (rechute) */
+    .choiceRow{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-top:10px;
+      padding:10px;
+      border:1px solid rgba(194,24,91,.14);
+      border-radius:14px;
+      background:linear-gradient(180deg,#fff,#fff5fb);
+    }
+    .choiceRow .lbl{font-weight:900;color:#3b2b43}
+    .checkPill{
+      display:flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border:1px solid rgba(194,24,91,.18);
+      border-radius:999px;
+      background:#fff;
+      cursor:pointer;
+      user-select:none;
+      box-shadow:0 10px 18px rgba(0,0,0,.05);
+    }
+    .checkPill input{accent-color: var(--brand2);}
+
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:.9rem;
+    }
+
+    .toast{
+      display:none;
+      position:fixed;left:50%;transform:translateX(-50%);
+      bottom:18px;
+      background:#1b1020;color:#ffe3ef;
+      padding:10px 12px;border-radius:14px;
+      box-shadow:0 18px 40px rgba(0,0,0,.22);
+      max-width:92vw;
+      font-weight:900;
+      border:1px solid rgba(255,227,239,.25);
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="topbar">
+    <div class="titleWrap">
+      <div class="t">Aide à la décision clinique</div>
+      <div class="s">Décisions • Intensité • Risque endocrine (proxy) • Risque de rechute selon traitement</div>
+    </div>
+
+    <div class="btnGroup">
+      <a class="btn ghost" href="/" id="backBtn">Diagnostic cancer du sein</a>
+      <a class="btn ghost" href="http://127.0.0.1:5001/" id="nextBtn">NACT</a>
+
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- FORM -->
+  <section class="card">
+    <div class="h">
+      <div>Données patient / tumeur</div>
+      <div class="pill neutral" id="formStatus">Saisie</div>
+    </div>
+
+    <div class="b">
+      <div class="sectionTitle">Paramètres</div>
+
+      <div class="formGrid">
+        <div class="field" id="f_age">
+          <label for="age_at_diagnosis">Âge (années)</label>
+          <input id="age_at_diagnosis" type="number" inputmode="numeric" min="10" max="120" step="1" required />
+          <div class="hint">Entier • 10–120</div>
+          <div class="err">Âge invalide.</div>
+        </div>
+
+        <div class="field" id="f_size">
+          <label for="tumor_size">Taille tumorale (mm)</label>
+          <input id="tumor_size" type="number" inputmode="decimal" min="0" max="250" step="0.1" required />
+          <div class="hint">0–250</div>
+          <div class="err">Taille invalide.</div>
+        </div>
+
+        <div class="field" id="f_stage">
+          <label for="tumor_stage">Stade</label>
+          <select id="tumor_stage" required>
+            <option value="" selected>Choisir…</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          </select>
+          <div class="hint">1–4</div>
+          <div class="err">Stade requis.</div>
+        </div>
+
+        <div class="field" id="f_grade">
+          <label for="neoplasm_histologic_grade">Grade</label>
+          <select id="neoplasm_histologic_grade" required>
+            <option value="" selected>Choisir…</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          </select>
+          <div class="hint">1–3</div>
+          <div class="err">Grade requis.</div>
+        </div>
+
+        <div class="field" id="f_cell">
+          <label for="cellularity">Cellularité</label>
+          <input id="cellularity" type="number" inputmode="decimal" min="0" max="1" step="0.01" required />
+          <div class="hint">0.00–1.00</div>
+          <div class="err">Cellularité invalide.</div>
+        </div>
+
+        <div class="field" id="f_pam50">
+          <label for="pam50_subtype">PAM50</label>
+          <select id="pam50_subtype" required>
+            <option value="" selected>Choisir…</option>
+            <option value="luma">LumA</option>
+            <option value="lumb">LumB</option>
+            <option value="her2">HER2-enriched</option>
+            <option value="basal">Basal</option>
+            <option value="normal">Normal-like</option>
+            <option value="claudin-low">Claudin-low</option>
+            <option value="nc">Inconnu</option>
+          </select>
+          <div class="hint">Normalisé</div>
+          <div class="err">PAM50 requis.</div>
+        </div>
+
+        <div class="field" id="f_er">
+          <label for="er_status">ER</label>
+          <select id="er_status" required>
+            <option value="" selected>Choisir…</option>
+            <option value="positive">Positif</option>
+            <option value="negative">Négatif</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Valeurs fermées</div>
+          <div class="err">ER requis.</div>
+        </div>
+
+        <div class="field" id="f_pr">
+          <label for="pr_status">PR</label>
+          <select id="pr_status" required>
+            <option value="" selected>Choisir…</option>
+            <option value="positive">Positif</option>
+            <option value="negative">Négatif</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Valeurs fermées</div>
+          <div class="err">PR requis.</div>
+        </div>
+
+        <div class="field" id="f_her2">
+          <label for="her2_status">HER2</label>
+          <select id="her2_status" required>
+            <option value="" selected>Choisir…</option>
+            <option value="positive">Positif</option>
+            <option value="negative">Négatif</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Valeurs fermées</div>
+          <div class="err">HER2 requis.</div>
+        </div>
+
+        <div class="field" id="f_meno">
+          <label for="inferred_menopausal_state">Ménopause</label>
+          <select id="inferred_menopausal_state" required>
+            <option value="" selected>Choisir…</option>
+            <option value="pre">Pré</option>
+            <option value="post">Post</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Pré / Post</div>
+          <div class="err">Statut requis.</div>
+        </div>
+
+        <div class="field" id="f_surg">
+          <label for="type_of_breast_surgery">Chirurgie</label>
+          <select id="type_of_breast_surgery" required>
+            <option value="" selected>Choisir…</option>
+            <option value="breast conserving">Conservatrice</option>
+            <option value="mastectomy">Mastectomie</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Valeurs fermées</div>
+          <div class="err">Chirurgie requise.</div>
+        </div>
+
+        <div class="field" id="f_lat">
+          <label for="primary_tumor_laterality">Latéralité</label>
+          <select id="primary_tumor_laterality" required>
+            <option value="" selected>Choisir…</option>
+            <option value="left">Gauche</option>
+            <option value="right">Droite</option>
+            <option value="bilateral">Bilatéral</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Valeurs fermées</div>
+          <div class="err">Latéralité requise.</div>
+        </div>
+
+        <div class="field" id="f_ct">
+          <label for="cancer_type">Type</label>
+          <select id="cancer_type" required>
+            <option value="" selected>Choisir…</option>
+            <option value="breast cancer">Cancer du sein</option>
+            <option value="breast sarcoma">Sarcome mammaire</option>
+            <option value="unknown">Inconnu</option>
+          </select>
+          <div class="hint">Cohérent avec l’entraînement</div>
+          <div class="err">Type requis.</div>
+        </div>
+
+        <div class="field" id="f_ctd" style="grid-column: span 2;">
+          <label for="cancer_type_detailed">Type détaillé</label>
+          <input id="cancer_type_detailed" list="ctd_list" autocomplete="off" required placeholder="ex: invasive ductal carcinoma"/>
+          <datalist id="ctd_list">
+            <option value="invasive breast carcinoma"></option>
+            <option value="invasive ductal carcinoma"></option>
+            <option value="invasive lobular carcinoma"></option>
+            <option value="metaplastic breast cancer"></option>
+            <option value="breast mixed ductal and lobular carcinoma"></option>
+          </datalist>
+          <div class="hint">Guidé • min 3 caractères</div>
+          <div class="err">Type détaillé requis.</div>
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <div class="btnGroup">
+          <button class="btn light" type="button" id="resetBtn">Réinitialiser</button>
+          <button class="btn light" type="button" id="exampleBtn">Préremplir un exemple</button>
+        </div>
+        <button class="btn primary" type="button" id="predictBtn">Analyser</button>
+      </div>
+
+      <div class="loader" id="loader">
+        <div style="font-weight:900">Analyse en cours…</div>
+        <div class="mini">
+          Appels : /obj1/predict • /obj2/intensity • /obj3/endocrine_proxy • (rechute après choix traitement)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="card" style="margin-top:14px">
+    <div class="h">
+      <div>Synthèse</div>
+      <div class="pill neutral" id="rcpPill">En attente</div>
+    </div>
+
+    <div class="b">
+      <div class="stack">
+        <div class="banner" id="clinicalSummary">
+          <h3>Renseignez les données, puis lancez l’analyse.</h3>
+          <p class="mini">Le risque de rechute se calcule en dernier, après sélection du traitement.</p>
+        </div>
+
+        <div class="panel" id="decisionsPanel" style="display:none">
+          <div class="panelTop">
+            <div>Décisions thérapeutiques</div>
+            <span class="pill neutral" id="decisionsBadge">—</span>
+          </div>
+          <div class="panelBody">
+            <div id="therapyCards" class="stack"></div>
+
+            <div class="panel" id="xaiPanel" style="display:none; margin-top:12px; border-radius:14px">
+              <div class="panelTop">
+                <div>Explication (décisions)</div>
+                <span class="pill neutral" id="xaiBadge">Top facteurs</span>
+              </div>
+              <div class="panelBody">
+                <div class="mini">
+                  Les éléments ci-dessous expliquent la tendance du modèle. Ils ne constituent pas une prescription.
+                </div>
+                <div class="tabs" id="xaiTabs"></div>
+                <div id="xaiContent" style="margin-top:10px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="obj2Box" style="display:none">
+          <div class="panelTop">
+            <div>Intensité thérapeutique</div>
+            <span class="pill neutral" id="obj2Badge">—</span>
+          </div>
+          <div class="panelBody">
+            <div class="mini">Score latent θ estimé à partir des probabilités des décisions.</div>
+
+            <div style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div style="font-weight:900;color:#3b2b43">Synthèse</div>
+                <span class="pill neutral" id="obj2LevelPill">—</span>
+              </div>
+
+              <div class="bar" aria-label="intensité">
+                <div class="fill" id="obj2Fill" style="width:0%"></div>
+              </div>
+
+              <div class="metaLine">
+                <div class="k">Score θ</div>
+                <div class="v" id="obj2Theta">—</div>
+              </div>
+
+              <div class="metaLine">
+                <div class="k">Niveau</div>
+                <div class="v" id="obj2LevelText">—</div>
+              </div>
+
+              <div class="note" id="obj2Note">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="obj3Box" style="display:none">
+          <div class="panelTop">
+            <div>Risque endocrine (proxy)</div>
+            <span class="pill neutral" id="obj3Badge">—</span>
+          </div>
+          <div class="panelBody">
+            <div class="mini">
+              Estimation proxy basée sur le profil tumoral. Sert au triage et à la discussion clinique.
+            </div>
+
+            <div style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div style="font-weight:900;color:#3b2b43">Synthèse</div>
+                <span class="pill neutral" id="obj3LevelPill">—</span>
+              </div>
+
+              <div class="bar" aria-label="risque endocrine">
+                <div class="fill" id="obj3Fill" style="width:0%"></div>
+              </div>
+
+              <div class="metaLine">
+                <div class="k">Probabilité</div>
+                <div class="v" id="obj3Proba">—</div>
+              </div>
+
+              <div class="metaLine">
+                <div class="k">Triage</div>
+                <div class="v" id="obj3Triage">—</div>
+              </div>
+
+              <div class="note" id="obj3Note">—</div>
+
+              <div class="panel" id="obj3XaiBox" style="display:none; margin-top:12px; border-radius:14px">
+                <div class="panelTop">
+                  <div>Explication (proxy endocrine)</div>
+                  <span class="pill neutral">—</span>
+                </div>
+                <div class="panelBody">
+                  <div class="mini">Variables qui augmentent / diminuent le risque proxy.</div>
+                  <div id="obj3XaiContent" style="margin-top:10px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="obj4Box" style="display:none">
+          <div class="panelTop">
+            <div>Risque de rechute (selon traitement(s) choisi(s))</div>
+            <span class="pill neutral" id="obj4Badge">—</span>
+          </div>
+          <div class="panelBody">
+            <div class="mini">
+              Sélectionnez un ou plusieurs traitements, puis calculez le risque de rechute.
+              Le modèle utilise les données du formulaire + les indicateurs de traitement.
+            </div>
+
+            <!-- ✅ MULTISELECT (checkbox) -->
+            <div class="choiceRow" role="group" aria-label="Choix traitement rechute (multi)">
+              <div class="lbl">Traitements :</div>
+
+              <label class="checkPill">
+                <input type="checkbox" name="relapse_trt" value="chemotherapy" />
+                Chimiothérapie
+              </label>
+
+              <label class="checkPill">
+                <input type="checkbox" name="relapse_trt" value="radio_therapy" />
+                Radiothérapie
+              </label>
+
+              <label class="checkPill">
+                <input type="checkbox" name="relapse_trt" value="hormone_therapy" />
+                Hormonothérapie
+              </label>
+
+              <button class="btn primary" type="button" id="obj4PredictBtn">Calculer</button>
+              <button class="btn danger" type="button" id="obj4ClearBtn">Effacer</button>
+            </div>
+
+            <div style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div style="font-weight:900;color:#3b2b43">Résultat</div>
+                <span class="pill neutral" id="obj4LevelPill">—</span>
+              </div>
+
+              <div class="bar" aria-label="risque rechute">
+                <div class="fill" id="obj4Fill" style="width:0%"></div>
+              </div>
+
+              <div class="metaLine">
+                <div class="k">Probabilité</div>
+                <div class="v" id="obj4Proba">—</div>
+              </div>
+
+              <div class="metaLine">
+                <div class="k">Triage</div>
+                <div class="v" id="obj4Triage">—</div>
+              </div>
+
+              <div class="note" id="obj4Note">Choisissez au moins un traitement puis cliquez sur “Calculer”.</div>
+
+              <div class="panel" id="obj4XaiBox" style="display:none; margin-top:12px; border-radius:14px">
+                <div class="panelTop">
+                  <div>Explication (rechute)</div>
+                  <span class="pill neutral">—</span>
+                </div>
+                <div class="panelBody">
+                  <div class="mini">Facteurs principaux (doctor-friendly).</div>
+                  <div id="obj4XaiContent" style="margin-top:10px"></div>
+                </div>
+              </div>
+
+              <div class="mini" id="obj4Debug" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // =========================
+  // API ROUTES
+  // =========================
+  const API_OBJ1 = "/obj1/predict";
+  const API_OBJ2 = "/obj2/intensity";
+  const API_OBJ3 = "/obj3/endocrine_proxy";
+  const API_OBJ4 = "/obj4/relapse";
+
+  // =========================
+  // DOM
+  // =========================
+  const loader = document.getElementById("loader");
+  const therapyCards = document.getElementById("therapyCards");
+  const clinicalSummary = document.getElementById("clinicalSummary");
+  const rcpPill = document.getElementById("rcpPill");
+  const formStatus = document.getElementById("formStatus");
+  const toast = document.getElementById("toast");
+
+  const decisionsPanel = document.getElementById("decisionsPanel");
+  const decisionsBadge = document.getElementById("decisionsBadge");
+  const xaiPanel = document.getElementById("xaiPanel");
+  const xaiTabs = document.getElementById("xaiTabs");
+  const xaiContent = document.getElementById("xaiContent");
+
+  const obj2Box = document.getElementById("obj2Box");
+  const obj2Badge = document.getElementById("obj2Badge");
+  const obj2LevelPill = document.getElementById("obj2LevelPill");
+  const obj2Fill = document.getElementById("obj2Fill");
+  const obj2Theta = document.getElementById("obj2Theta");
+  const obj2LevelText = document.getElementById("obj2LevelText");
+  const obj2Note = document.getElementById("obj2Note");
+
+  const obj3Box = document.getElementById("obj3Box");
+  const obj3Badge = document.getElementById("obj3Badge");
+  const obj3LevelPill = document.getElementById("obj3LevelPill");
+  const obj3Fill = document.getElementById("obj3Fill");
+  const obj3Proba = document.getElementById("obj3Proba");
+  const obj3Triage = document.getElementById("obj3Triage");
+  const obj3Note = document.getElementById("obj3Note");
+  const obj3XaiBox = document.getElementById("obj3XaiBox");
+  const obj3XaiContent = document.getElementById("obj3XaiContent");
+
+  const obj4Box = document.getElementById("obj4Box");
+  const obj4Badge = document.getElementById("obj4Badge");
+  const obj4LevelPill = document.getElementById("obj4LevelPill");
+  const obj4Fill = document.getElementById("obj4Fill");
+  const obj4Proba = document.getElementById("obj4Proba");
+  const obj4Triage = document.getElementById("obj4Triage");
+  const obj4Note = document.getElementById("obj4Note");
+  const obj4XaiBox = document.getElementById("obj4XaiBox");
+  const obj4XaiContent = document.getElementById("obj4XaiContent");
+  const obj4PredictBtn = document.getElementById("obj4PredictBtn");
+  const obj4ClearBtn = document.getElementById("obj4ClearBtn");
+  const obj4Debug = document.getElementById("obj4Debug");
+
+  // =========================
+  // Helpers UI
+  // =========================
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.style.display = "block";
+    setTimeout(()=>toast.style.display="none", 2400);
+  }
+
+  function parseNumStrict(el, {min=null, max=null, isInt=false}={}) {
+    const raw = String(el.value ?? "").trim();
+    if(!raw) return {ok:false, val:null, msg:"Champ requis"};
+    const x = Number(raw.replace(",", "."));
+    if(!Number.isFinite(x)) return {ok:false, val:null, msg:"Nombre invalide"};
+    if(isInt && !Number.isInteger(x)) return {ok:false, val:null, msg:"Entier requis"};
+    if(min!==null && x < min) return {ok:false, val:null, msg:`Min ${min}`};
+    if(max!==null && x > max) return {ok:false, val:null, msg:`Max ${max}`};
+    return {ok:true, val:x, msg:""};
+  }
+
+  function setInvalid(fieldId, ok, msg=""){
+    const box = document.getElementById(fieldId);
+    if(!box) return;
+    box.classList.toggle("invalid", !ok);
+    const err = box.querySelector(".err");
+    if(err && msg) err.textContent = msg;
+  }
+
+  function normText(s){ return String(s ?? "").trim().toLowerCase(); }
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+  function pct(x){ return Math.round(clamp01(x)*100); }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  function safeText(x){
+    if(x === null || x === undefined) return "—";
+    if(typeof x === "number") return Number.isFinite(x) ? String(x) : "—";
+    return String(x);
+  }
+
+  function getPayloadValidated(){
+    const ageEl = document.getElementById("age_at_diagnosis");
+    const sizeEl = document.getElementById("tumor_size");
+    const cellEl = document.getElementById("cellularity");
+
+    const age = parseNumStrict(ageEl, {min:10,max:120,isInt:true});
+    const size = parseNumStrict(sizeEl, {min:0,max:250,isInt:false});
+    const cell = parseNumStrict(cellEl, {min:0,max:1,isInt:false});
+
+    setInvalid("f_age", age.ok, age.msg || "Âge invalide");
+    setInvalid("f_size", size.ok, size.msg || "Taille invalide");
+    setInvalid("f_cell", cell.ok, cell.msg || "Cellularité invalide");
+
+    const requiredSelects = [
+      ["f_stage","tumor_stage"],
+      ["f_grade","neoplasm_histologic_grade"],
+      ["f_pam50","pam50_subtype"],
+      ["f_er","er_status"],
+      ["f_pr","pr_status"],
+      ["f_her2","her2_status"],
+      ["f_meno","inferred_menopausal_state"],
+      ["f_surg","type_of_breast_surgery"],
+      ["f_lat","primary_tumor_laterality"],
+      ["f_ct","cancer_type"]
+    ];
+    let ok = age.ok && size.ok && cell.ok;
+
+    for(const [fid, id] of requiredSelects){
+      const v = document.getElementById(id).value;
+      const good = !!v;
+      setInvalid(fid, good, "Champ requis");
+      ok = ok && good;
+    }
+
+    const ctdEl = document.getElementById("cancer_type_detailed");
+    const ctd = normText(ctdEl.value);
+    const ctdOk = ctd.length >= 3;
+    setInvalid("f_ctd", ctdOk, "Champ requis (min 3 caractères)");
+    ok = ok && ctdOk;
+
+    if(!ok){
+      formStatus.className = "pill bad";
+      formStatus.textContent = "Champs invalides";
+      return {ok:false, payload:null};
+    }
+
+    formStatus.className = "pill good";
+    formStatus.textContent = "Prêt";
+
+    const payload = {
+      age_at_diagnosis: age.val,
+      tumor_size: size.val,
+      tumor_stage: Number(document.getElementById("tumor_stage").value),
+      neoplasm_histologic_grade: Number(document.getElementById("neoplasm_histologic_grade").value),
+      cellularity: cell.val,
+
+      pam50_subtype: normText(document.getElementById("pam50_subtype").value),
+      cancer_type: normText(document.getElementById("cancer_type").value),
+      cancer_type_detailed: ctd,
+
+      er_status: normText(document.getElementById("er_status").value),
+      pr_status: normText(document.getElementById("pr_status").value),
+      her2_status: normText(document.getElementById("her2_status").value),
+      inferred_menopausal_state: normText(document.getElementById("inferred_menopausal_state").value),
+      type_of_breast_surgery: normText(document.getElementById("type_of_breast_surgery").value),
+      primary_tumor_laterality: normText(document.getElementById("primary_tumor_laterality").value),
+
+      with_xai: true
+    };
+
+    return {ok:true, payload};
+  }
+
+  function triageLabel(t){
+    const U = String(t||"").toUpperCase();
+    if(U==="HIGH") return {txt:"Probable", cls:"good"};
+    if(U==="LOW") return {txt:"Peu probable", cls:"bad"};
+    return {txt:"Zone grise", cls:"warn"};
+  }
+
+  function barColor(triage){
+    const U = String(triage||"").toUpperCase();
+    if(U==="HIGH") return "linear-gradient(90deg,#27b37b,#1b8f5a)";
+    if(U==="LOW") return "linear-gradient(90deg,#ff6b7a,#c62828)";
+    return "linear-gradient(90deg,#ffcc66,#b26a00)";
+  }
+
+  function cardioText(name, triage, p){
+    const U = String(triage||"").toUpperCase();
+    const pp = pct(p);
+    if(U==="HIGH") return `Le modèle estime que <b>${name}</b> est <b>probable</b> (≈ ${pp}%).`;
+    if(U==="LOW")  return `Le modèle estime que <b>${name}</b> est <b>peu probable</b> (≈ ${pp}%).`;
+    return `Le modèle place <b>${name}</b> en <b>zone d’incertitude</b> (≈ ${pp}%). Discussion clinique recommandée.`;
+  }
+
+  function renderTherapyCard(title, obj){
+    if(!obj) return "";
+    const p = Number(obj.proba_yes ?? 0);
+    const lo = Number(obj.lo ?? 0);
+    const hi = Number(obj.hi ?? 0);
+    const t = triageLabel(obj.triage);
+    const pp = pct(p);
+    const note = cardioText(title, obj.triage, p);
+
+    return `
+      <div class="panel" style="border-radius:14px">
+        <div class="panelTop">
+          <div>${escapeHtml(title)}</div>
+          <span class="pill ${t.cls}">${t.txt}</span>
+        </div>
+        <div class="panelBody">
+          <div class="bar" aria-label="probabilité">
+            <div class="fill" style="width:${pp}%; background:${barColor(obj.triage)}"></div>
+          </div>
+
+          <div class="metaLine">
+            <div class="k">Probabilité</div>
+            <div class="v">${pp}%</div>
+          </div>
+          <div class="metaLine">
+            <div class="k">Seuils</div>
+            <div class="v">Non ≤ ${(lo*100).toFixed(0)}% • Oui ≥ ${(hi*100).toFixed(0)}%</div>
+          </div>
+
+          <div class="note">${note}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // =========================
+  // XAI (decisions)
+  // =========================
+  const VAR_LABELS = {
+    age_at_diagnosis: "Âge",
+    tumor_size: "Taille tumorale",
+    tumor_stage: "Stade",
+    neoplasm_histologic_grade: "Grade",
+    cellularity: "Cellularité",
+    er_status: "ER",
+    pr_status: "PR",
+    her2_status: "HER2",
+    inferred_menopausal_state: "Ménopause",
+    type_of_breast_surgery: "Chirurgie",
+    primary_tumor_laterality: "Latéralité",
+    pam50_subtype: "PAM50",
+    cancer_type: "Type",
+    cancer_type_detailed: "Type détaillé"
+  };
+
+  function niceValue(varKey, value){
+    if(value===null || value===undefined) return "—";
+    const v = String(value);
+    if(varKey==="er_status"||varKey==="pr_status"||varKey==="her2_status"){
+      if(v==="positive") return "Positif";
+      if(v==="negative") return "Négatif";
+      return v;
+    }
+    if(varKey==="inferred_menopausal_state"){
+      if(v==="pre") return "Pré";
+      if(v==="post") return "Post";
+      return v;
+    }
+    if(varKey==="type_of_breast_surgery"){
+      if(v==="breast conserving") return "Conservatrice";
+      if(v==="mastectomy") return "Mastectomie";
+      return v;
+    }
+    if(varKey==="pam50_subtype"){
+      return v.toUpperCase();
+    }
+    return v;
+  }
+
+  function renderXAIList(items, direction){
+    if(!items || !items.length) return `<div class="mini">Aucun facteur dominant identifié.</div>`;
+    return items.map(it=>{
+      const varKey = it.var;
+      const label = VAR_LABELS[varKey] || varKey;
+      const val = niceValue(varKey, it.value);
+      const tag = direction==="up" ? "En faveur" : "Contre";
+      const cls = direction==="up" ? "up" : "down";
+      return `
+        <div class="li">
+          <div class="left">
+            <div class="var">${escapeHtml(label)}</div>
+            <div class="val">${escapeHtml(val)}</div>
+          </div>
+          <div class="tag ${cls}">${tag}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderXAIPanel(labKey, xaiLocal){
+    const inc = xaiLocal?.increase || [];
+    const dec = xaiLocal?.decrease || [];
+    return `
+      <div class="xaiGrid">
+        <div class="xaiCol">
+          <h4>Facteurs qui poussent vers “Oui”</h4>
+          ${renderXAIList(inc, "up")}
+        </div>
+        <div class="xaiCol">
+          <h4>Facteurs qui poussent vers “Non”</h4>
+          ${renderXAIList(dec, "down")}
+        </div>
+      </div>
+    `;
+  }
+
+  function labTitle(lab){
+    if(lab==="chemotherapy") return "Chimiothérapie";
+    if(lab==="hormone_therapy") return "Hormonothérapie";
+    if(lab==="radio_therapy") return "Radiothérapie";
+    return lab;
+  }
+
+  function buildXAITabs(data){
+    xaiTabs.innerHTML = "";
+    xaiContent.innerHTML = "";
+    const local = data?.xai?.local || {};
+    const labels = Object.keys(local);
+    if(!labels.length) return;
+
+    labels.forEach((lab, idx)=>{
+      const btn = document.createElement("button");
+      btn.type="button";
+      btn.className = "tabBtn" + (idx===0 ? " active" : "");
+      btn.textContent = labTitle(lab);
+
+      btn.addEventListener("click", ()=>{
+        [...xaiTabs.children].forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        xaiContent.innerHTML = renderXAIPanel(lab, local[lab]);
+      });
+
+      xaiTabs.appendChild(btn);
+
+      if(idx===0){
+        xaiContent.innerHTML = renderXAIPanel(lab, local[lab]);
+      }
+    });
+  }
+
+  function updateClinicalSummary(data){
+    const needs = !!data?.needs_rcp;
+    if(needs){
+      rcpPill.className = "pill warn";
+      rcpPill.textContent = "Discussion recommandée";
+      clinicalSummary.innerHTML = `
+        <h3>Zone d’incertitude</h3>
+        <p>Au moins une décision est en zone d’incertitude. Une discussion clinique est recommandée.</p>
+        <p class="mini">Les résultats ci-dessous sont un support à la décision.</p>
+      `;
+    }else{
+      rcpPill.className = "pill good";
+      rcpPill.textContent = "Cohérent";
+      clinicalSummary.innerHTML = `
+        <h3>Cohérence décisionnelle</h3>
+        <p>Les décisions proposées franchissent les seuils définis. Vérifier la cohérence clinique globale.</p>
+        <p class="mini">Une relecture clinique reste indispensable.</p>
+      `;
+    }
+  }
+
+  // =========================
+  // OBJ2
+  // =========================
+  function obj2LevelUI(level){
+    const L = String(level||"").trim().toLowerCase();
+    if(L.startsWith("faible")) return {txt:"Faible", cls:"good", w:25, grad:"linear-gradient(90deg,#27b37b,#1b8f5a)"};
+    if(L.startsWith("mod"))    return {txt:"Modéré", cls:"warn", w:50, grad:"linear-gradient(90deg,#ffcc66,#b26a00)"};
+    if(L.startsWith("élev") || L.startsWith("elev")) return {txt:"Élevé", cls:"warn", w:75, grad:"linear-gradient(90deg,#ffb84d,#b26a00)"};
+    if(L.startsWith("très") || L.startsWith("tres")) return {txt:"Très élevé", cls:"bad", w:95, grad:"linear-gradient(90deg,#ff6b7a,#c62828)"};
+    return {txt:"—", cls:"neutral", w:0, grad:"linear-gradient(90deg,#e6d2de,#c8b2c0)"};
+  }
+
+  function renderOBJ2(data){
+    const theta = Number(data?.theta);
+    const level = data?.level;
+    const ui = obj2LevelUI(level);
+
+    obj2Box.style.display = "block";
+    obj2Badge.className = "pill neutral";
+    obj2Badge.textContent = "Résultat";
+
+    obj2LevelPill.className = "pill " + ui.cls;
+    obj2LevelPill.textContent = ui.txt;
+
+    obj2Fill.style.width = ui.w + "%";
+    obj2Fill.style.background = ui.grad;
+
+    obj2Theta.textContent = Number.isFinite(theta) ? theta.toFixed(3) : "—";
+    obj2LevelText.textContent = ui.txt;
+
+    obj2Note.innerHTML = `Intensité estimée : <b>${ui.txt}</b>. <span class="mini">À interpréter avec les éléments cliniques.</span>`;
+  }
+
+  // =========================
+  // OBJ3
+  // =========================
+  function obj3Band(p){
+    const x = clamp01(Number(p));
+    if(x >= 0.70) return {txt:"Élevé", cls:"bad", w:95, grad:"linear-gradient(90deg,#ff6b7a,#c62828)"};
+    if(x >= 0.40) return {txt:"Intermédiaire", cls:"warn", w:65, grad:"linear-gradient(90deg,#ffcc66,#b26a00)"};
+    return {txt:"Faible", cls:"good", w:30, grad:"linear-gradient(90deg,#27b37b,#1b8f5a)"};
+  }
+
+  function renderOBJ3(data3){
+    const p = Number(data3?.proba_proxy_resistance);
+    const pp = pct(p);
+    const band = obj3Band(p);
+
+    obj3Box.style.display = "block";
+    obj3Badge.className = "pill neutral";
+    obj3Badge.textContent = "Résultat";
+
+    obj3LevelPill.className = "pill " + band.cls;
+    obj3LevelPill.textContent = band.txt;
+
+    obj3Fill.style.width = band.w + "%";
+    obj3Fill.style.background = band.grad;
+
+    obj3Proba.textContent = `${pp}%`;
+    obj3Triage.textContent = safeText(data3?.triage || band.txt);
+
+    obj3Note.innerHTML = `Risque proxy : <b>${band.txt}</b> (≈ ${pp}%). <div class="mini">Support de triage et de suivi.</div>`;
+  }
+
+  function renderOBJ3XAI(fromObj1){
+    const local = fromObj1?.xai?.local || {};
+    const key = local.hormone_therapy ? "hormone_therapy" : (Object.keys(local)[0] || null);
+    if(!key){
+      obj3XaiBox.style.display = "none";
+      return;
+    }
+    obj3XaiContent.innerHTML = renderXAIPanel(key, local[key]);
+    obj3XaiBox.style.display = "block";
+  }
+
+  // =========================
+  // OBJ4 — rechute (multi-traitements)
+  // =========================
+  function obj4Band(p){
+    const x = clamp01(Number(p));
+    if(x >= 0.70) return {txt:"Élevé", cls:"bad", w:95, grad:"linear-gradient(90deg,#ff6b7a,#c62828)"};
+    if(x >= 0.40) return {txt:"Intermédiaire", cls:"warn", w:65, grad:"linear-gradient(90deg,#ffcc66,#b26a00)"};
+    return {txt:"Faible", cls:"good", w:30, grad:"linear-gradient(90deg,#27b37b,#1b8f5a)"};
+  }
+
+  function pickObj4Proba(d){
+    const cands = [d?.proba_relapse, d?.proba, d?.relapse_proba, d?.probability, d?.risk_proba];
+    for(const v of cands){
+      const n = Number(v);
+      if(Number.isFinite(n)) return n;
+    }
+    return NaN;
+  }
+
+  function renderOBJ4(d4){
+    const p = pickObj4Proba(d4);
+    const ok = Number.isFinite(p);
+    const pp = ok ? pct(p) : null;
+    const band = ok ? obj4Band(p) : {txt:"—", cls:"neutral", w:0, grad:"linear-gradient(90deg,#e6d2de,#c8b2c0)"};
+
+    obj4Badge.className = "pill neutral";
+    obj4Badge.textContent = ok ? "Résultat" : "Indisponible";
+
+    obj4LevelPill.className = "pill " + band.cls;
+    obj4LevelPill.textContent = band.txt;
+
+    obj4Fill.style.width = band.w + "%";
+    obj4Fill.style.background = band.grad;
+
+    obj4Proba.textContent = (pp===null) ? "—" : `${pp}%`;
+    obj4Triage.textContent = safeText(d4?.triage || band.txt);
+
+    if(pp===null){
+      obj4Note.innerHTML = `Résultat non disponible. <div class="mini">Vérifier le format de sortie de l’API.</div>`;
+    }else{
+      obj4Note.innerHTML = `Risque estimé : <b>${band.txt}</b> (≈ ${pp}%). <div class="mini">Selon les traitements sélectionnés.</div>`;
+    }
+
+    const xai = d4?.xai || {};
+    if(xai?.local){
+      const keys = Object.keys(xai.local);
+      if(keys.length){
+        const k = keys[0];
+        obj4XaiContent.innerHTML = renderXAIPanel(k, xai.local[k]);
+        obj4XaiBox.style.display = "block";
+      }else{
+        obj4XaiBox.style.display = "none";
+      }
+    }else{
+      obj4XaiBox.style.display = "none";
+    }
+
+    if(d4?.debug){
+      const js = JSON.stringify(d4.debug);
+      obj4Debug.innerHTML = `Détails: <span class="mono">${escapeHtml(js).slice(0, 220)}${js.length>220?"…":""}</span>`;
+    }else{
+      obj4Debug.textContent = "";
+    }
+  }
+
+  function getSelectedTreatments(){
+    const els = [...document.querySelectorAll('input[name="relapse_trt"]:checked')];
+    return els.map(e=>e.value);
+  }
+
+  async function predictRelapseByTreatment(){
+    const v = getPayloadValidated();
+    if(!v.ok){
+      showToast("Veuillez corriger le formulaire avant de calculer la rechute.");
+      return;
+    }
+    const trts = getSelectedTreatments();
+    if(!trts.length){
+      showToast("Veuillez sélectionner au moins un traitement.");
+      return;
+    }
+
+    obj4Badge.className = "pill neutral";
+    obj4Badge.textContent = "Analyse…";
+    obj4Note.textContent = "Calcul en cours…";
+    obj4XaiBox.style.display = "none";
+    obj4Debug.textContent = "";
+
+    // ✅ flags multi (et liste "treatments" + string "treatment" pour compat)
+    const therapyFlags = {
+      chemotherapy: trts.includes("chemotherapy") ? 1 : 0,
+      radio_therapy: trts.includes("radio_therapy") ? 1 : 0,
+      hormone_therapy: trts.includes("hormone_therapy") ? 1 : 0,
+      treatments: trts,
+      treatment: trts.join("+") // fallback si ton backend attend une string
+    };
+
+    const payload = { ...v.payload, ...therapyFlags };
+
+    try{
+      const r = await fetch(API_OBJ4, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+      const d4 = await r.json().catch(()=>({error:"Réponse invalide"}));
+
+      if(!r.ok || d4.error){
+        obj4Badge.className = "pill warn";
+        obj4Badge.textContent = "Erreur";
+        obj4Note.innerHTML = `Impossible d’obtenir le résultat. <div class="mini">${escapeHtml((d4?.error || ("Erreur HTTP "+r.status)).toString())}</div>`;
+        return;
+      }
+
+      renderOBJ4(d4);
+      showToast("Risque de rechute calculé.");
+    }catch(e){
+      obj4Badge.className = "pill warn";
+      obj4Badge.textContent = "Connexion";
+      obj4Note.textContent = "Connexion impossible au serveur.";
+      console.error(e);
+    }
+  }
+
+  function clearObj4(){
+    document.querySelectorAll('input[name="relapse_trt"]').forEach(c=>c.checked=false);
+    obj4Badge.className = "pill neutral";
+    obj4Badge.textContent = "—";
+    obj4LevelPill.className = "pill neutral";
+    obj4LevelPill.textContent = "—";
+    obj4Fill.style.width = "0%";
+    obj4Fill.style.background = "linear-gradient(90deg,#e6d2de,#c8b2c0)";
+    obj4Proba.textContent = "—";
+    obj4Triage.textContent = "—";
+    obj4Note.textContent = "Choisissez au moins un traitement puis cliquez sur “Calculer”.";
+    obj4XaiBox.style.display = "none";
+    obj4Debug.textContent = "";
+  }
+
+  obj4PredictBtn.addEventListener("click", predictRelapseByTreatment);
+  obj4ClearBtn.addEventListener("click", clearObj4);
+
+  // =========================
+  // MAIN PREDICT (OBJ1/2/3)
+  // =========================
+  async function doPredict(){
+    const v = getPayloadValidated();
+    if(!v.ok){
+      showToast("Veuillez corriger les champs en rouge.");
+      return;
+    }
+
+    loader.style.display = "block";
+
+    decisionsPanel.style.display = "none";
+    xaiPanel.style.display = "none";
+    therapyCards.innerHTML = "";
+
+    obj2Box.style.display = "none";
+    obj3Box.style.display = "none";
+    obj4Box.style.display = "none";
+    obj3XaiBox.style.display = "none";
+    obj4XaiBox.style.display = "none";
+
+    clearObj4();
+
+    rcpPill.className = "pill neutral";
+    rcpPill.textContent = "Analyse…";
+
+    try{
+      // 1) OBJ1
+      const r1 = await fetch(API_OBJ1, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(v.payload)
+      });
+      const data1 = await r1.json();
+
+      if(!r1.ok || data1.error){
+        loader.style.display = "none";
+        showToast(data1.error || ("Erreur HTTP " + r1.status));
+        rcpPill.className = "pill bad";
+        rcpPill.textContent = "Erreur";
+        clinicalSummary.innerHTML = `
+          <h3>Erreur d’analyse</h3>
+          <p>Vérifiez le service <b>${escapeHtml(API_OBJ1)}</b>.</p>
+          <p class="mini">${escapeHtml((data1.error||"").toString())}</p>
+        `;
+        return;
+      }
+
+      updateClinicalSummary(data1);
+
+      const preds = data1.predictions || {};
+      decisionsPanel.style.display = "block";
+      decisionsBadge.className = "pill neutral";
+      decisionsBadge.textContent = "Résultat";
+
+      therapyCards.innerHTML =
+        renderTherapyCard("Chimiothérapie", preds.chemotherapy) +
+        renderTherapyCard("Hormonothérapie", preds.hormone_therapy) +
+        renderTherapyCard("Radiothérapie", preds.radio_therapy);
+
+      xaiPanel.style.display = "block";
+      buildXAITabs(data1);
+
+      // 2) OBJ2 + OBJ3
+      const [r2, r3] = await Promise.all([
+        fetch(API_OBJ2, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(v.payload) }),
+        fetch(API_OBJ3, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(v.payload) })
+      ]);
+
+      const data2 = await r2.json().catch(()=>({error:"Réponse invalide"}));
+      const data3 = await r3.json().catch(()=>({error:"Réponse invalide"}));
+
+      loader.style.display = "none";
+
+      // OBJ2
+      if(r2.ok && !data2.error){
+        renderOBJ2(data2);
+      }else{
+        obj2Box.style.display = "block";
+        obj2Badge.className = "pill warn";
+        obj2Badge.textContent = "Indisponible";
+        obj2Note.innerHTML = `Impossible d’obtenir le résultat. <div class="mini">${escapeHtml((data2?.error || ("Erreur HTTP "+r2.status)).toString())}</div>`;
+      }
+
+      // OBJ3
+      if(r3.ok && !data3.error){
+        renderOBJ3(data3);
+        renderOBJ3XAI(data1);
+      }else{
+        obj3Box.style.display = "block";
+        obj3Badge.className = "pill warn";
+        obj3Badge.textContent = "Indisponible";
+        obj3Note.innerHTML = `Impossible d’obtenir le résultat. <div class="mini">${escapeHtml((data3?.error || ("Erreur HTTP "+r3.status)).toString())}</div>`;
+      }
+
+      // show OBJ4 last (multi)
+      obj4Box.style.display = "block";
+      obj4Badge.className = "pill neutral";
+      obj4Badge.textContent = "En attente";
+      obj4Note.textContent = "Choisissez un ou plusieurs traitements puis cliquez sur “Calculer”.";
+      showToast("Analyse terminée. Sélectionnez des traitements pour estimer la rechute.");
+
+    }catch(e){
+      loader.style.display="none";
+      rcpPill.className = "pill bad";
+      rcpPill.textContent = "Connexion";
+      clinicalSummary.innerHTML = `
+        <h3>Connexion impossible</h3>
+        <p>Le serveur ne répond pas. Vérifiez que l’application tourne et que les routes existent.</p>
+      `;
+      console.error(e);
+    }
+  }
+
+  window.addEventListener("pageshow", (e)=>{
+    if(e.persisted){
+      loader.style.display="none";
+    }
+  });
+
+  document.getElementById("predictBtn").addEventListener("click", doPredict);
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    document.querySelectorAll("input").forEach(i => i.value = "");
+    document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+
+    document.querySelectorAll(".field").forEach(f => f.classList.remove("invalid"));
+    formStatus.className="pill neutral";
+    formStatus.textContent="Saisie";
+
+    loader.style.display="none";
+
+    decisionsPanel.style.display="none";
+    xaiPanel.style.display="none";
+    therapyCards.innerHTML="";
+
+    obj2Box.style.display="none";
+    obj3Box.style.display="none";
+    obj4Box.style.display="none";
+
+    obj3XaiBox.style.display="none";
+    obj4XaiBox.style.display="none";
+
+    clearObj4();
+
+    rcpPill.className="pill neutral";
+    rcpPill.textContent="En attente";
+
+    clinicalSummary.innerHTML = `
+      <h3>Renseignez les données, puis lancez l’analyse.</h3>
+      <p class="mini">Le risque de rechute se calcule en dernier, après sélection du traitement.</p>
+    `;
+  });
+
+  document.getElementById("exampleBtn").addEventListener("click", () => {
+    document.getElementById("age_at_diagnosis").value = 55;
+    document.getElementById("tumor_size").value = 28;
+    document.getElementById("tumor_stage").value = "2";
+    document.getElementById("neoplasm_histologic_grade").value = "3";
+    document.getElementById("cellularity").value = 0.65;
+
+    document.getElementById("pam50_subtype").value = "lumb";
+    document.getElementById("cancer_type").value = "breast cancer";
+    document.getElementById("cancer_type_detailed").value = "invasive ductal carcinoma";
+
+    document.getElementById("er_status").value = "positive";
+    document.getElementById("pr_status").value = "negative";
+    document.getElementById("her2_status").value = "negative";
+    document.getElementById("inferred_menopausal_state").value = "post";
+    document.getElementById("type_of_breast_surgery").value = "mastectomy";
+
+    document.getElementById("primary_tumor_laterality").value = "right";
+
+    document.querySelectorAll(".field").forEach(f => f.classList.remove("invalid"));
+    formStatus.className="pill good";
+    formStatus.textContent="Prêt";
+    showToast("Exemple chargé.");
+  });
+</script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-# utils/feature_extraction.py
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -7,44 +6,71 @@ from radiomics import featureextractor
 from sklearn.preprocessing import StandardScaler
 from tempfile import TemporaryDirectory
 
+
 def extract_features_from_images(images, segmentations):
     """
-    images, segmentations : listes de fichiers uploadés depuis Flask
-    Retourne : DataFrame avec les features radiomics, index = patient_id
+    images, segmentations :
+    - Flask FileStorage
+    - FastAPI UploadFile sauvegardés
+    - pathlib.Path
+
+    Retourne : DataFrame standardisé des features radiomics
     """
+
     # ====================== Radiomics extractor ======================
     extractor = featureextractor.RadiomicsFeatureExtractor()
     extractor.settings["binWidth"] = 25
-    extractor.settings["resampledPixelSpacing"] = [1,1,1]
+    extractor.settings["resampledPixelSpacing"] = [1, 1, 1]
     extractor.settings["interpolator"] = "sitkBSpline"
     extractor.enableAllFeatures()
 
     data = []
 
-    # Trier les fichiers pour correspondre
-    images = sorted(images, key=lambda f: f.filename)
-    segmentations = sorted(segmentations, key=lambda f: f.filename) if segmentations else [None]*len(images)
+    # ====================== Alignement fichiers ======================
+    def get_name(f):
+        return f.filename if hasattr(f, "filename") else Path(f).name
 
-    # Utilisation d'un dossier temporaire pour enregistrer les uploads
+    images = sorted(images, key=get_name)
+
+    if segmentations:
+        segmentations = sorted(segmentations, key=get_name)
+    else:
+        segmentations = [None] * len(images)
+
+    # ====================== Temp directory ======================
     with TemporaryDirectory() as tmpdir:
-        for idx, (img_file, seg_file) in enumerate(zip(images, segmentations)):
+        tmpdir = Path(tmpdir)
+
+        for idx, (img, seg) in enumerate(zip(images, segmentations)):
             pid = f"patient_{idx+1}"
+
             try:
-                # Sauvegarder l'image
-                img_path = Path(tmpdir) / img_file.filename
-                img_file.save(img_path)
+                # ---------------- IMAGE ----------------
+                if hasattr(img, "save"):  # Flask FileStorage
+                    img_path = tmpdir / img.filename
+                    img.save(img_path)
+                else:  # Path
+                    img_path = Path(img)
 
-                # Sauvegarder la segmentation si fournie
+                # ---------------- SEGMENTATION ----------------
                 seg_path = None
-                if seg_file:
-                    seg_path = Path(tmpdir) / seg_file.filename
-                    seg_file.save(seg_path)
+                if seg:
+                    if hasattr(seg, "save"):
+                        seg_path = tmpdir / seg.filename
+                        seg.save(seg_path)
+                    else:
+                        seg_path = Path(seg)
 
-                # Lire avec SimpleITK
-                img = sitk.ReadImage(str(img_path))
-                seg = sitk.ReadImage(str(seg_path)) if seg_path else None
+                # ---------------- READ ----------------
+                img_itk = sitk.ReadImage(str(img_path))
+                seg_itk = sitk.ReadImage(str(seg_path)) if seg_path else None
 
-                features = extractor.execute(img, seg) if seg else extractor.execute(img)
+                features = (
+                    extractor.execute(img_itk, seg_itk)
+                    if seg_itk else
+                    extractor.execute(img_itk)
+                )
+
                 row = {"patient_id": pid}
 
                 for k, v in features.items():
@@ -54,25 +80,42 @@ def extract_features_from_images(images, segmentations):
                         row[k] = float(v)
                     else:
                         row[k] = np.nan
+
                 data.append(row)
 
             except Exception as e:
-                print(f"Erreur extraction pour {pid}: {e}")
+                print(f"❌ Radiomics error for {pid}: {e}")
 
     # ====================== DataFrame ======================
     if not data:
-        print("Aucune feature extraite !")
+        print("❌ No radiomics features extracted")
         return pd.DataFrame()
 
     df = pd.DataFrame(data).set_index("patient_id")
     df = df.apply(pd.to_numeric, errors="coerce")
 
-    # Nettoyage
+    # ---------------- CLEANING ----------------
     df = df.dropna(axis=1, how="all")
     df = df.loc[:, df.nunique() > 1]
+
+    # 🔥 FIX CRITIQUE
+    if df.shape[1] == 0:
+        print("❌ Radiomics DF has zero valid features")
+        return pd.DataFrame()
+
     df = df.fillna(df.median())
 
-    # Standardisation
+    scaler = StandardScaler()
+    df_scaled = pd.DataFrame(
+        scaler.fit_transform(df),
+        index=df.index,
+        columns=df.columns
+    )
+
+
+    df = df.fillna(df.median())
+
+    # ---------------- SCALING ----------------
     scaler = StandardScaler()
     df_scaled = pd.DataFrame(
         scaler.fit_transform(df),

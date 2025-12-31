@@ -2,170 +2,809 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Prédiction de Réponse au Traitement Néoadjuvant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Cytologique - Carcinome Mammaire</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #fff0f5; /* Rose très doux */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            padding: 30px;
+        :root {
+            --rose-principal: #e75480;
+            --rose-clair: #f9d5e5;
+            --rose-fonce: #d43f76;
+            --vert-bénin: #2e8b57;
+            --rouge-malin: #c2185b;
+            --gris-clair: #f8f9fa;
+            --gris-moyen: #6c757d;
+            --gris-fonce: #495057;
+            --blanc: #ffffff;
+            --border-radius: 10px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
         }
-
-        h1 {
-            text-align: center;
-            color: #d1477c; /* Rose profond October Rose */
-            margin-bottom: 30px;
-        }
-
-        form {
-            background-color: #ffffff;
-            padding: 25px 30px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: 500;
-        }
-
-        input[type="text"], input[type="file"] {
-            width: 100%;
-            padding: 8px 12px;
-            margin-top: 5px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+        
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
         }
-
-        input[type="submit"] {
-            margin-top: 25px;
-            background-color: #d1477c;
+        
+        body {
+            background: linear-gradient(135deg, #fff5f7 0%, #f8f9fa 100%);
+            color: var(--gris-fonce);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e75480' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        
+        /* Header avec thème rose */
+        .header {
+            background: linear-gradient(135deg, var(--rose-principal), var(--rose-fonce));
             color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #b23c6d;
-        }
-
-        h2 {
-            margin-top: 30px;
-            color: #d1477c;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.3);
-        }
-
-        .modal-content {
-            background-color: #ffe6f0; /* Rose très clair */
-            margin: 10% auto;
-            padding: 35px 25px;
-            border: 2px solid #d1477c;
-            border-radius: 15px;
-            max-width: 600px;
+            padding: 1.8rem 2rem;
             text-align: center;
-            font-size: 18px;
-            color: #333;
+            box-shadow: 0 4px 12px rgba(231, 84, 128, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "🌸";
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.1;
+            top: -30px;
+            left: -30px;
+            transform: rotate(-15deg);
+        }
+        
+        .header::after {
+            content: "🌸";
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.1;
+            bottom: -30px;
+            right: -30px;
+            transform: rotate(15deg);
+        }
+        
+        .hospital-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .page-title {
+            margin: 1rem 0;
+        }
+        
+        .page-title h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+        
+        .ribbon {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Conteneur principal */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* Section paramètres - taille réduite */
+        .form-section {
+            background: var(--blanc);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: 1px solid var(--rose-clair);
+        }
+        
+        .section-title {
+            background: linear-gradient(to right, var(--rose-clair), var(--blanc));
+            padding: 1.2rem 1.5rem;
+            border-left: 5px solid var(--rose-principal);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .section-title i {
+            color: var(--rose-principal);
+            font-size: 1.3rem;
+        }
+        
+        .section-title h2 {
+            color: var(--rose-fonce);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        /* Formulaire compact */
+        .compact-form {
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--gris-fonce);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group label i {
+            color: var(--rose-principal);
+            font-size: 0.9rem;
+        }
+        
+        .param-desc {
+            font-size: 0.85rem;
+            color: var(--gris-moyen);
+            margin-bottom: 0.3rem;
+            line-height: 1.4;
+        }
+        
+        .input-wrapper {
             position: relative;
         }
-
-        .close-btn {
-            background-color: #d1477c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+        
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--gris-clair);
         }
-
-        .close-btn:hover {
-            background-color: #b23c6d;
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--rose-principal);
+            box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.1);
+            background: var(--blanc);
+        }
+        
+        .input-unit {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gris-moyen);
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+        
+        .range-info {
+            font-size: 0.8rem;
+            color: var(--gris-moyen);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.3rem;
+        }
+        
+        .range-benign {
+            color: var(--vert-bénin);
+        }
+        
+        .range-malignant {
+            color: var(--rouge-malin);
+        }
+        
+        /* Zone résultats */
+        .results-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .results-card {
+            background: var(--blanc);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--rose-clair);
+        }
+        
+        .diagnosis-content {
+            padding: 2.5rem;
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .waiting {
+            color: var(--gris-moyen);
+        }
+        
+        .result-benign {
+            background: linear-gradient(135deg, #f0fff4, #e6f7ed);
+            border-left: 6px solid var(--vert-bénin);
+        }
+        
+        .result-malignant {
+            background: linear-gradient(135deg, #fff0f7, #ffe6f0);
+            border-left: 6px solid var(--rouge-malin);
+        }
+        
+        .diagnosis-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+        }
+        
+        .result-benign .diagnosis-icon {
+            color: var(--vert-bénin);
+        }
+        
+        .result-malignant .diagnosis-icon {
+            color: var(--rouge-malin);
+        }
+        
+        .diagnosis-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+        
+        .result-benign .diagnosis-text {
+            color: var(--vert-bénin);
+        }
+        
+        .result-malignant .diagnosis-text {
+            color: var(--rouge-malin);
+        }
+        
+        .diagnosis-desc {
+            font-size: 1rem;
+            color: var(--gris-moyen);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Boutons */
+        .actions-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--rose-principal), var(--rose-fonce));
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 84, 128, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(231, 84, 128, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--gris-clair);
+            color: var(--gris-fonce);
+            border: 2px solid #e9ecef;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        /* Loader */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            background: var(--blanc);
+            border-radius: var(--border-radius);
+            margin: 2rem auto;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+        
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            border: 4px solid var(--rose-clair);
+            border-top: 4px solid var(--rose-principal);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: var(--gris-moyen);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .patient-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .info-item {
+            background: var(--blanc);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid var(--rose-clair);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .compact-form {
+                max-height: 400px;
+            }
+            
+            .btn {
+                min-width: 100%;
+            }
+            
+            .actions-container {
+                flex-direction: column;
+            }
+            
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+            
+            .diagnosis-text {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .patient-info {
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: center;
+            }
+            
+            .compact-form {
+                padding: 1rem;
+            }
+            
+            .diagnosis-content {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Scrollbar personnalisée */
+        .compact-form::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .compact-form::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .compact-form::-webkit-scrollbar-thumb {
+            background: var(--rose-principal);
+            border-radius: 4px;
+        }
+        
+        .compact-form::-webkit-scrollbar-thumb:hover {
+            background: var(--rose-fonce);
         }
     </style>
 </head>
 <body>
-    <form id="predictForm" enctype="multipart/form-data">
-        <h1>Prédiction de Réponse au Traitement Néoadjuvant</h1>
-
-        <!-- Upload dossier d'images -->
-        <label for="images">Dossier des images :</label>
-        <input type="file" id="images" name="images" multiple webkitdirectory directory>
-
-        <!-- Upload dossier des segmentations -->
-        <label for="segmentations">Dossier des segmentations :</label>
-        <input type="file" id="segmentations" name="segmentations" multiple webkitdirectory directory>
-
-        <h2>Informations cliniques</h2>
-        {% for feature in clin_features  %}
-            <label for="{{ feature }}">{{ feature.replace('_',' ').capitalize() }}:</label>
-            <input type="text" id="{{ feature }}" name="{{ feature }}" required>
-        {% endfor %}
-
-        <input type="submit" value="Prédire">
-    </form>
-
-    <!-- Modal -->
-    <div id="resultModal" class="modal">
-        <div class="modal-content" id="modalText">
-            <p></p>
-            <button class="close-btn" onclick="closeModal()">Fermer</button>
+    <!-- En-tête avec thème rose -->
+    <header class="header">
+        <div class="hospital-name">
+            <i class="fas fa-hospital-alt"></i> CENTRE D'ONCOLOGIE MAMMAIRE
         </div>
-    </div>
+        
+        <div class="page-title">
+            <h1>DIAGNOSTIC CYTOLOGIQUE ASSISTÉ</h1>
+            <div class="ribbon">
+                Carcinome Mammaire  • Octobre Rose
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteneur principal -->
+    <main class="main-container">
+        <!-- Section paramètres cytologiques - Formulaire compact -->
+        <section class="form-section">
+            <div class="section-title">
+                <i class="fas fa-microscope"></i>
+                <h2>PARAMÈTRES CYTOLOGIQUES</h2>
+            </div>
+            
+            <form id="clinicalForm" class="compact-form">
+                <div class="form-grid">
+                    <!-- Premiers paramètres -->
+                    {% for i in range(0, 10) %}
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-dna"></i>
+                            {{ features[i].replace('_', ' ').title() }}
+                        </label>
+                        <div class="param-desc">
+                            {% if 'radius' in features[i] %}Rayon nucléaire{% endif %}
+                            {% if 'texture' in features[i] %}Variation d'intensité{% endif %}
+                            {% if 'perimeter' in features[i] %}Périmètre nucléaire{% endif %}
+                            {% if 'area' in features[i] %}Surface nucléaire{% endif %}
+                            {% if 'smoothness' in features[i] %}Régularité des contours{% endif %}
+                            {% if 'compactness' in features[i] %}Compacité nucléaire{% endif %}
+                            {% if 'concavity' in features[i] %}Profondeur des concavités{% endif %}
+                            {% if 'concave' in features[i] %}Points concaves{% endif %}
+                            {% if 'symmetry' in features[i] %}Symétrie nucléaire{% endif %}
+                            {% if 'fractal' in features[i] %}Complexité des contours{% endif %}
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.001" 
+                                   class="form-input" 
+                                   id="feature_{{ i }}" 
+                                   name="feature_{{ i }}"
+                                   required
+                                   placeholder="0.000">
+                            <span class="input-unit">µm</span>
+                        </div>
+                        <div class="range-info">
+                            <span class="range-benign">Bénin</span>
+                            <span class="range-malignant">Malin</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Paramètres supplémentaires (exemple réduit) -->
+                    {% for i in range(10, 20) %}
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-chart-line"></i>
+                            {{ features[i].replace('_', ' ').title() }}
+                        </label>
+                        <div class="param-desc">
+                            {% if 'se' in features[i] %}Variabilité intra-tumorale{% endif %}
+                            {% if 'worst' in features[i] %}Zone la plus anormale{% endif %}
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="number" step="0.001" 
+                                   class="form-input" 
+                                   id="feature_{{ i }}" 
+                                   name="feature_{{ i }}"
+                                   required
+                                   placeholder="0.000">
+                            <span class="input-unit">unit</span>
+                        </div>
+                        <div class="range-info">
+                            <span class="range-benign">Standard</span>
+                            <span class="range-malignant">Élevé</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </section>
+
+        <!-- Zone des résultats -->
+        <section class="results-section">
+            <div class="results-card">
+                <div class="diagnosis-content" id="diagnosisResult">
+                    <div class="waiting" id="waiting">
+                        <div class="diagnosis-icon">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div class="diagnosis-text">ANALYSE EN ATTENTE</div>
+                        <p class="diagnosis-desc">
+                            Veuillez saisir les paramètres cytologiques<br>
+                            et lancer l'analyse pour obtenir le diagnostic
+                        </p>
+                    </div>
+                    
+                    <!-- Résultat Bénin -->
+                    <div id="benignResult" class="result-benign" style="display: none;">
+                        <div class="diagnosis-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="diagnosis-text">ASPECT CYTOLOGIQUE BÉNIN</div>
+                        <p class="diagnosis-desc">
+                            Absence de critères de malignité détectés
+                        </p>
+                    </div>
+                    
+                    <!-- Résultat Malin -->
+                    <div id="malignantResult" class="result-malignant" style="display: none;">
+                        <div class="diagnosis-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="diagnosis-text">SUSPICION DE MALIGNITÉ</div>
+                        <p class="diagnosis-desc">
+                            Critères cytologiques évocateurs de carcinome
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <div class="actions-container">
+            <button type="button" class="btn btn-secondary" id="resetBtn">
+                <i class="fas fa-redo"></i> Réinitialiser
+            </button>
+            
+            <button type="submit" class="btn btn-primary" id="predictBtn" form="clinicalForm">
+                 <i class="fas fa-vial"></i> Analyser 
+            </button>
+            <button type="button" class="btn btn-primary" id="goTherapyBtn">
+                <i class="fas fa-notes-medical"></i> Aide à la décision médicale
+            </button>
+            
+            <button type="button" class="btn btn-secondary" id="exportBtn">
+                <i class="fas fa-file-export"></i> Exporter
+            </button>
+        </div>
+
+        <!-- Loader -->
+        <div class="loader" id="loader">
+            <div class="loader-spinner"></div>
+            <h3>ANALYSE CYTOLOGIQUE EN COURS</h3>
+            <p>Évaluation des paramètres cytologiques...</p>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="patient-info">
+            <div class="info-item">
+                <i class="fas fa-user"></i> N° Patient: CHU-2024-05872
+            </div>
+            <div class="info-item">
+                <i class="fas fa-file-medical"></i> FNA: WDBC-569
+            </div>
+            <div class="info-item">
+                <i class="fas fa-calendar"></i> Section: ANAPATH 2024-045
+            </div>
+        </div>
+        
+        <div class="footer-content">
+            <p>
+                <i class="fas fa-info-circle"></i> Cet outil d'aide au diagnostic fournit une analyse préliminaire basée sur les paramètres cytologiques. 
+                Le diagnostic définitif relève de la responsabilité du médecin anatomo-pathologiste.
+            </p>
+        </div>
+    </footer>
 
     <script>
-        const form = document.getElementById('predictForm');
-        const modal = document.getElementById('resultModal');
-        const modalText = document.getElementById('modalText').querySelector('p');
-
-        form.addEventListener('submit', function(e){
-            e.preventDefault();
-
-            const formData = new FormData(form);
-
-            fetch('/predict', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                modalText.textContent = data;
-                modal.style.display = 'block';
-            })
-            .catch(err => alert("Erreur : " + err));
+        document.getElementById('goTherapyBtn').addEventListener('click', function () {
+        window.location.href = "/therapy_test";
         });
 
-        function closeModal() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+        // Gestion du formulaire
+        document.getElementById('clinicalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            
+            // Afficher le loader
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('waiting').style.display = 'none';
+            document.getElementById('benignResult').style.display = 'none';
+            document.getElementById('malignantResult').style.display = 'none';
+            
+            // Animation
+            document.getElementById('diagnosisResult').style.animation = 'fadeIn 0.5s ease';
+            
+            // Récupérer les données
+            const formData = new FormData(this);
+            
+            try {
+                // Simulation de délai pour l'UI
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Envoyer au serveur
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                // Cacher le loader
+                document.getElementById('loader').style.display = 'none';
+                
+                if (result.success) {
+                    if (result.prediction === 0) {
+                        // Résultat BÉNIN
+                        document.getElementById('benignResult').style.display = 'block';
+                        showNotification('Résultat Bénin', 'success');
+                    } else {
+                        // Résultat MALIN
+                        document.getElementById('malignantResult').style.display = 'block';
+                        showNotification('Suspicion de malignité détectée', 'warning');
+                    }
+                } else {
+                    showNotification('Erreur d\'analyse: ' + result.error, 'error');
+                    document.getElementById('waiting').style.display = 'block';
+                }
+                
+            } catch (error) {
+                document.getElementById('loader').style.display = 'none';
+                showNotification('Erreur de connexion au serveur', 'error');
+                document.getElementById('waiting').style.display = 'block';
+                console.error('Erreur:', error);
             }
+        });
+        
+        // Fonction de notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: ${type === 'error' ? '#f8d7da' : type === 'warning' ? '#fff3cd' : '#d1ecf1'};
+                border-left: 4px solid ${type === 'error' ? '#721c24' : type === 'warning' ? '#856404' : '#0c5460'};
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                z-index: 1000;
+                max-width: 400px;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+            `;
+            
+            const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            notification.innerHTML = `
+                <span style="font-size: 1.2rem;">${icon}</span>
+                <div style="font-weight: 500;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
         }
+        
+        // Bouton Réinitialiser
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            if (confirm('Réinitialiser tous les paramètres ?')) {
+                document.getElementById('clinicalForm').reset();
+                document.getElementById('benignResult').style.display = 'none';
+                document.getElementById('malignantResult').style.display = 'none';
+                document.getElementById('waiting').style.display = 'block';
+                
+                showNotification('Formulaire réinitialisé', 'info');
+            }
+        });
+        
+        // Bouton Exporter
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            showNotification('Export du rapport en cours...', 'info');
+            setTimeout(() => {
+                window.print();
+            }, 1000);
+        });
+        
+        // Amélioration des inputs
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Style d'animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Charger des valeurs par défaut pour démonstration
+        window.addEventListener('load', function() {
+            // Optionnel: pré-remplir avec des valeurs de test
+            // const testValues = [...];
+            // testValues.forEach((val, i) => {
+            //     const input = document.getElementById(`feature_${i}`);
+            //     if (input) input.value = val;
+            // });
+        });
     </script>
 </body>
 </html>

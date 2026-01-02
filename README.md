@@ -125,14 +125,11 @@ Objective: Predict before surgery whether a patient will achieve a Pathological 
 
 Models Evaluated: ANN, XGBoost, LightGBM
 
-Model	AUC-ROC
-ANN	0.692
-XGBoost	0.775
-LightGBM (retained)	0.799
+AUC-ROC:
+-ANN: 0.692
+-XGBoost :	0.775
+-LightGBM (retained)	: 0.799
 
-Chosen Model: LightGBM
-
-Recall: 0.895
 
 **Feature Extraction & Fusion**
 

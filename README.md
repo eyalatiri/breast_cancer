@@ -153,6 +153,7 @@ Component	Constraint:
 A single environment causes:DLL load failures/NumPy C-extension crashes/Runtime instability
 
 -Adopted Solution: Dual Flask Architecture
+
 🧠 **Environment 1 – Clinical & Tabular Models**
 
 Flask application
@@ -163,7 +164,7 @@ TensorFlow, XGBoost, LightGBM
 
 NumPy ≥ 2.0
 
-🧬** Environment 2 – Radiomics & pCR**
+🧬 **Environment 2 – Radiomics & pCR**
 
 Flask application
 

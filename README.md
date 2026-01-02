@@ -44,6 +44,7 @@ The project follows the six phases of CRISP-DM:
 -**Deployment** – Flask-based applications with isolated environments
 
 🤖 **Machine Learning Models & Objectives**
+
 **Objective 1 – Tumour Diagnostic Model (Classification)**
 
 Objective: Distinguish between malignant and benign tumours using morphological features for early and objective diagnosis.

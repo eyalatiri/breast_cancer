@@ -132,7 +132,7 @@ Models Evaluated: ANN, XGBoost, LightGBM
 AUC-ROC:
 -ANN: 0.692
 -XGBoost :	0.775
--LightGBM (retained)	: 0.799
+-LightGBM (retained)	: 0.8
 
 
 **Feature Extraction & Fusion**
